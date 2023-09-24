@@ -202,14 +202,12 @@ class NGUIdle:
 
         def reset_to_0(self):
             for ingredient in range(self.get_nb_ingredients()):
-                if (self.is_ingredient_valid(ingredient)):
-                    self.click_minus(ingredient, self.nb_value_per_ingredient)
+                self.click_minus(ingredient, self.nb_value_per_ingredient)
             self.values.fill(0)
 
         def set_all_ingredients_to(self, value):
             for ingredient in range(self.get_nb_ingredients()):
-                if (self.is_ingredient_valid(ingredient)):
-                    self.set_ingredient_value(ingredient, value)
+                self.set_ingredient_value(ingredient, value)
 
         def set_ingredient_value(self, ingredient_index, value):
             value = np.clip(value, 0, self.nb_value_per_ingredient-1)
