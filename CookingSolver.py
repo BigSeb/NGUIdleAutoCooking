@@ -3,6 +3,11 @@ import numpy as np
 from scipy.signal import argrelextrema
 import numpy_indexed as npi
 import logging
+import time
+
+
+def wait_for_ui_update(update_ui_delay=50/1000):
+    time.sleep(update_ui_delay)
 
 
 def solve_cooking(ngu: NGUIdle):
@@ -24,6 +29,7 @@ def solve_cooking(ngu: NGUIdle):
         for i in range(nb_ingredients):
             for value in range(nb_value_per_ingredient):
                 ngu.cooking.set_ingredient_value(i, value)
+                wait_for_ui_update()
                 data[i][value] = ngu.cooking.get_meal_efficiency()[0]
             ngu.cooking.set_ingredient_value(i, 0)
         # Uncomment the next line to skip the previous iteration
@@ -55,6 +61,7 @@ def solve_cooking(ngu: NGUIdle):
             for value2_ in range(nb_value_per_ingredient):
                 value2 = value2_ if ((idx1 % 2) == 0) else nb_value_per_ingredient - value2_ - 1
                 ngu.cooking.set_ingredient_value(ing2, value2)
+                wait_for_ui_update()
                 eff = ngu.cooking.get_meal_efficiency()[0]
                 best_pairs.append(((value1, value2), eff))
         best_pair = max(best_pairs, key=lambda x: x[1])
@@ -69,6 +76,7 @@ def solve_cooking(ngu: NGUIdle):
         best_values = []
         for value1 in extremas:
             ngu.cooking.set_ingredient_value(ing1, value1)
+            wait_for_ui_update()
             eff = ngu.cooking.get_meal_efficiency()[0]
             best_values.append((value1, eff))
         best_value = max(best_values, key=lambda x: x[1])
