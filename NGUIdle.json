@@ -1,0 +1,195 @@
+{
+    "General": {
+        "Resolution": {
+            "width": 1280,
+            "height": 800
+        }
+    },
+    "Menus": {
+        "BasicTraining": {
+            "left": 235,
+            "top": 13,
+            "width": 152,
+            "height": 36
+        },
+        "FightBoss": {
+            "left": 235,
+            "top": 49,
+            "width": 152,
+            "height": 36
+        },
+        "MoneyPit": {
+            "left": 235,
+            "top": 85,
+            "width": 152,
+            "height": 36
+        },
+        "Adventure": {
+            "left": 235,
+            "top": 121,
+            "width": 152,
+            "height": 36
+        },
+        "Inventory": {
+            "left": 235,
+            "top": 157,
+            "width": 152,
+            "height": 36
+        },
+        "Augmentation": {
+            "left": 235,
+            "top": 193,
+            "width": 152,
+            "height": 36
+        },
+        "AdvTraining": {
+            "left": 235,
+            "top": 229,
+            "width": 152,
+            "height": 36
+        },
+        "TimeMachine": {
+            "left": 235,
+            "top": 265,
+            "width": 152,
+            "height": 36
+        },
+        "BloodMagic": {
+            "left": 235,
+            "top": 301,
+            "width": 152,
+            "height": 36
+        },
+        "Wandoos": {
+            "left": 235,
+            "top": 337,
+            "width": 152,
+            "height": 36
+        },
+        "NGU": {
+            "left": 235,
+            "top": 373,
+            "width": 152,
+            "height": 36
+        },
+        "Yggdrasil": {
+            "left": 235,
+            "top": 409,
+            "width": 152,
+            "height": 36
+        },
+        "GoldDiggers": {
+            "left": 235,
+            "top": 445,
+            "width": 152,
+            "height": 36
+        },
+        "Beards": {
+            "left": 235,
+            "top": 481,
+            "width": 152,
+            "height": 36
+        },
+        "Questing": {
+            "left": 235,
+            "top": 517,
+            "width": 152,
+            "height": 36
+        },
+        "Hacks": {
+            "left": 235,
+            "top": 553,
+            "width": 152,
+            "height": 36
+        },
+        "Wishes": {
+            "left": 235,
+            "top": 589,
+            "width": 152,
+            "height": 36
+        },
+        "Cards": {
+            "left": 235,
+            "top": 625,
+            "width": 152,
+            "height": 36
+        },
+        "Cooking": {
+            "left": 235,
+            "top": 661,
+            "width": 152,
+            "height": 36
+        }
+    },
+    "Cooking": {
+        "nb_value_per_ingredient": 21,
+        "IngredientsGrid": {
+            "grid_x": 2,
+            "grid_y": 4,
+            "offset_x": 374,
+            "offset_y": 120,
+            "Plus": {
+                "left": 742,
+                "top": 130,
+                "width": 29,
+                "height": 16
+            },
+            "Minus": {
+                "left": 742,
+                "top": 163,
+                "width": 29,
+                "height": 15
+            }
+        },
+        "Ingredients": [
+            {
+                "Plus": {
+                    "left": 742,
+                    "top": 130,
+                    "width": 29,
+                    "height": 16
+                },
+                "Minus": {
+                    "left": 742,
+                    "top": 163,
+                    "width": 29,
+                    "height": 15
+                }
+            },
+            {
+                "Plus": {
+                    "left": 1116,
+                    "top": 130,
+                    "width": 29,
+                    "height": 16
+                },
+                "Minus": {
+                    "left": 1116,
+                    "top": 163,
+                    "width": 29,
+                    "height": 15
+                }
+            },
+            {
+                "Plus": {
+                    "left": 1116,
+                    "top": 250,
+                    "width": 29,
+                    "height": 16
+                },
+                "Minus": {
+                    "left": 1116,
+                    "top": 163,
+                    "width": 29,
+                    "height": 15
+                }
+            }
+        ],
+        "MealEfficiency": {
+            "left": 929,
+            "top": 612,
+            "width": 140,
+            "height": 24
+        }
+    }
+}
