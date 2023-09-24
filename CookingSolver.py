@@ -49,9 +49,11 @@ def solve_cooking(ngu: NGUIdle):
     for ing1, ing2 in pairs:    # iterate all pairs
         extremas = e[1, e[0, :] == ing1]
         best_pairs = []
-        for value1 in extremas:
+        for idx1 in range(len(extremas)):
+            value1 = extremas[idx1]
             ngu.cooking.set_ingredient_value(ing1, value1)
-            for value2 in range(nb_value_per_ingredient):
+            for value2_ in range(nb_value_per_ingredient):
+                value2 = value2_ if ((idx1 % 2) == 0) else nb_value_per_ingredient - value2_ - 1
                 ngu.cooking.set_ingredient_value(ing2, value2)
                 eff = ngu.cooking.get_meal_efficiency()[0]
                 best_pairs.append(((value1, value2), eff))
