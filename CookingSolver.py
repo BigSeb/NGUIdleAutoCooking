@@ -19,7 +19,7 @@ def solve_cooking(ngu: NGUIdle):
     try:
         data = np.load(data_file)
     except OSError:
-        logging.error("Iterate one ingredient at a time while the rest is set to 0")
+        print("Iterate one ingredient at a time while the rest is set to 0")
         data = np.zeros((nb_ingredients, nb_value_per_ingredient))
         for i in range(nb_ingredients):
             if ngu.cooking.is_ingredient_valid(i):
@@ -27,7 +27,8 @@ def solve_cooking(ngu: NGUIdle):
                     ngu.cooking.set_ingredient_value(i, value)
                     data[i][value] = ngu.cooking.get_meal_efficiency()[0]
                 ngu.cooking.set_ingredient_value(i, 0)
-        np.save(data_file, data)
+        # Uncomment the next line to skip the previous iteration
+        # np.save(data_file, data)
 
     # print(data)
 
