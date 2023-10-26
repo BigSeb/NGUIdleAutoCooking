@@ -36,7 +36,7 @@ Reset ingredients to 0
 Iterate one ingredient at a time while the rest is set to 0
 Find duplicated ingredients
 pairs and singles: [array([0, 4]), array([1]), array([2, 3]), array([5])]
-Find all local extrema
+Find all peaks
 Identify all best values for each pair
 Found ingredients ing 0 : 19, ing 4 : 19 with %36.98 efficiency
 Found ingredients ing 2 : 2, ing 3 : 5 with %84.01 efficiency
