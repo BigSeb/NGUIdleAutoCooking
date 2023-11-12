@@ -221,7 +221,8 @@ class NGUIdle:
         def get_meal_efficiency(self):
             meal_efficiency_rect = self.ngu.scale_config(to_rect(self.ngu.config['Cooking']["MealEfficiency"]))
             meal_efficiency_img = self.ngu.capture_region(meal_efficiency_rect)
-            text = util.to_text(meal_efficiency_img)
+            whitelist = "123456789+,%"
+            text = util.to_text(meal_efficiency_img, whitelist=whitelist)
             # Get best result
             text = text.sort_values("conf", ascending=False).iloc[0].text
             value = self.get_percentage_value(text)
@@ -229,5 +230,9 @@ class NGUIdle:
 
         def get_percentage_value(self, text):
             text = text.replace(',', '.')   # Replace , decimal with .
-            match = re.match("\+?(\d+\.?\d*)%?", text)
+            # The number must end with %
+            match = re.match("\+?(\d+\.?\d*)%$", text)
+            if not match:
+                # The % character  may have been interpreted as 9 or 6 or 0 by the OCR library. we will skip the last digit then
+                match = re.match("\+?(\d+\.?\d*)\d$", text)
             return float(match.group(1))
