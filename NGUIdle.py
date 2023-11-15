@@ -228,11 +228,35 @@ class NGUIdle:
             value = self.get_percentage_value(text)
             return value, meal_efficiency_img
 
-        def get_percentage_value(self, text):
+        def get_percentage_value(self, text, guess_errors=True):
             text = text.replace(',', '.')   # Replace , decimal with .
             # The number must end with %
-            match = re.match("\+?(\d+\.?\d*)%$", text)
+            match = re.match(r"\+?((0\.\d+)|([1-9]\d*\.\d*)|([1-9]\d{0,2}))%$", text)    # perfect match
+            if match and float(match.group(1)) > 100:
+                match = None
             if not match:
-                # The % character  may have been interpreted as 9 or 6 or 0 by the OCR library. we will skip the last digit then
-                match = re.match("\+?(\d+\.?\d*)\d$", text)
-            return float(match.group(1))
+                # special case: 100
+                match = re.match(r"\+?(100)$", text)
+            if not match and guess_errors:
+                # The % character  may have been interpreted as 9, 8 or 6 or 0 by the OCR library. we will skip the last digit then
+                # match = re.match(r"\+?(\d+\.?\d*)[0689]$", text)
+                match = re.match(r"\+?(\d{1,2}\.\d{1,2})\d$", text)
+            if not match and guess_errors:
+                # Missing the . after 0
+                match = re.match(r"\+?0(\d{1,3})%?$", text)
+                if match:
+                    value = float(match.group(1))
+                    value = value / (10**len(match.group(1)))
+                    return value
+            if not match and guess_errors:
+                # Missing the . or %
+                match = re.match(r"\+?(\d{1,4})%?$", text)
+                if match:
+                    value = float(match.group(1))
+                    value = value / 100 if value >= 1000 else value / 100
+                    return value
+
+            if not match:
+                raise ValueError(f"Invalid percentage value: {text}")
+            text = match.group(1)
+            return float(text)
