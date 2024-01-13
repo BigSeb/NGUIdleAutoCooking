@@ -221,12 +221,31 @@ class NGUIdle:
         def get_meal_efficiency(self):
             meal_efficiency_rect = self.ngu.scale_config(to_rect(self.ngu.config['Cooking']["MealEfficiency"]))
             meal_efficiency_img = self.ngu.capture_region(meal_efficiency_rect)
-            whitelist = "123456789+,%"
+            whitelist = "0123456789+,%"
             text = util.to_text(meal_efficiency_img, whitelist=whitelist)
             # Get best result
             text = text.sort_values("conf", ascending=False).iloc[0].text
-            value = self.get_percentage_value(text)
+            try:
+                value = self.get_percentage_value(text, guess_errors=False)
+            except ValueError:
+                value = self.get_percentage_value(text, guess_errors=True)
+                logging.warning(f"get_meal_efficiency: {text} is being interpreted as {value}")
+
+            # self.save_meal_efficiency_result(meal_efficiency_img, value)
+
+            if (value > 100):
+                breakpoint()
             return value, meal_efficiency_img
+
+        def save_meal_efficiency_result(self, img, value):
+            from PIL import Image
+            import os
+            im = Image.fromarray(img)
+            folder = "result"
+            if not os.path.exists(folder):
+                os.makedirs(folder)
+            filename = folder + "/meal_efficiency_" + "_".join(str(x) for x in self.values) + " - " + str(value) + ".png"
+            im.save(filename)
 
         def get_percentage_value(self, text, guess_errors=True):
             text = text.replace(',', '.')   # Replace , decimal with .
@@ -255,6 +274,9 @@ class NGUIdle:
                     value = float(match.group(1))
                     value = value / 100 if value >= 1000 else value / 100
                     return value
+            if not match and guess_errors:
+                # Missing the %
+                match = re.match(r"\+?(\d{1,2}\.\d{1,2})%?$", text)
 
             if not match:
                 raise ValueError(f"Invalid percentage value: {text}")

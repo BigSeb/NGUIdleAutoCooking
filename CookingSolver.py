@@ -10,7 +10,7 @@ def wait_for_ui_update(update_ui_delay=50/1000):
     time.sleep(update_ui_delay)
 
 
-def extract_individual_values_at_0(ngu, nb_ingredients, nb_value_per_ingredient):
+def extract_individual_values_at_0(ngu: NGUIdle, nb_ingredients, nb_value_per_ingredient):
     print("Iterate one ingredient at a time while the rest is set to 0")
     data = np.zeros((nb_ingredients, nb_value_per_ingredient))
     for i in range(nb_ingredients):
@@ -22,7 +22,7 @@ def extract_individual_values_at_0(ngu, nb_ingredients, nb_value_per_ingredient)
     return data
 
 
-def find_best_in_pair(ngu, nb_value_per_ingredient, peaks, ing1, ing2):
+def find_best_in_pair(ngu: NGUIdle, nb_value_per_ingredient, peaks, ing1, ing2):
     peaks_ingredient = peaks[1, peaks[0, :] == ing1]
     best_pairs = []
     for idx1 in range(len(peaks_ingredient)):
@@ -44,7 +44,7 @@ def find_best_in_pair(ngu, nb_value_per_ingredient, peaks, ing1, ing2):
     print(f"Found ingredients ({ing1} : {best_pair[0][0]}), ({ing2} : {best_pair[0][1]}) with %{best_pair[1]} efficiency")   # TODO: complete
 
 
-def find_best_single(ngu, peaks, ing1):
+def find_best_single(ngu: NGUIdle, peaks, ing1):
     peaks_ingredient = peaks[1, peaks[0, :] == ing1]
     best_values = []
     for value1 in peaks_ingredient:
@@ -97,6 +97,8 @@ def solve_cooking(ngu: NGUIdle):
     # subtract additional column index
     peaks[1, :] -= 1
 
+    # print(peaks)
+
     print("Identify all best values for each pair")
     pairs = [x for x in index_group if len(x) == 2]
     for ing1, ing2 in pairs:    # iterate all pairs
@@ -120,6 +122,8 @@ def solve_cooking(ngu: NGUIdle):
 
         print("Revision on pairs")
         for ing1, ing2 in pairs:    # iterate all pairs
+            ing1_value_previous = ngu.cooking.get_ingredients()[ing1]
+            ing2_value_previous = ngu.cooking.get_ingredients()[ing2]
             # set both ingredient to 20
             ngu.cooking.set_ingredient_value(ing1, nb_value_per_ingredient-1)
             ngu.cooking.set_ingredient_value(ing2, nb_value_per_ingredient-1)
@@ -137,13 +141,18 @@ def solve_cooking(ngu: NGUIdle):
             new_ext[:] -= 1
             new_ext = np.pad(new_ext, ((1, 0), (0, 0)), constant_values=ing1)
 
-            # has peaks changed?
-            if not np.array_equal(peaks[:, peaks[0, :] == ing2], new_ext):
+            # Find new peaks
+            old_peaks = peaks[1, peaks[0, :] == ing1]
+            new_peaks = new_ext[1]
+            if len(np.setdiff1d(new_peaks, old_peaks)) >= 0:
                 print(f"Found new peaks with ingredient {ing1} and {ing2}")
                 find_best_in_pair(ngu, nb_value_per_ingredient, new_ext, ing1, ing2)
 
                 if (best_solution_found(ngu)):
                     return True
+            else:
+                ngu.cooking.set_ingredient_value(ing1, ing1_value_previous)
+                ngu.cooking.set_ingredient_value(ing2, ing2_value_previous)
 
     return False
 
