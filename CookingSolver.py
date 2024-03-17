@@ -4,6 +4,10 @@ from scipy.signal import argrelextrema
 import numpy_indexed as npi
 import logging
 import time
+from collections import namedtuple
+
+
+Result = namedtuple("Result", "ingredients meal_efficiency")
 
 
 def wait_for_ui_update(update_ui_delay=50/1000):
@@ -42,6 +46,7 @@ def find_best_in_pair(ngu: NGUIdle, nb_value_per_ingredient, peaks, ing1, ing2):
     ngu.cooking.set_ingredient_value(ing1, best_pair[0][0])
     ngu.cooking.set_ingredient_value(ing2, best_pair[0][1])
     print(f"Found ingredients ({ing1} : {best_pair[0][0]}), ({ing2} : {best_pair[0][1]}) with %{best_pair[1]} efficiency")   # TODO: complete
+    return Result(ngu.cooking.values.copy(), best_pair[1])
 
 
 def find_best_single(ngu: NGUIdle, peaks, ing1):
@@ -57,10 +62,21 @@ def find_best_single(ngu: NGUIdle, peaks, ing1):
     best_value = max(best_values, key=lambda x: x[1])
     ngu.cooking.set_ingredient_value(ing1, best_value[0])
     print(f"Found ingredient ing {ing1} : {best_value[0]} with %{best_value[1]} efficiency")
+    return Result(ngu.cooking.values.copy(), best_value[1])
 
 
 def best_solution_found(ngu: NGUIdle):
     return ngu.cooking.get_meal_efficiency()[0] == 100
+
+
+def select_best_result(result1: Result, result2: Result):
+    if result1 is None:
+        return result2
+    if result2 is None:
+        return result1
+    if result1.meal_efficiency < result2.meal_efficiency:
+        return result2
+    return result1
 
 
 def solve_cooking(ngu: NGUIdle):
@@ -99,10 +115,14 @@ def solve_cooking(ngu: NGUIdle):
 
     # print(peaks)
 
+    best_result = None
+
     print("Identify all best values for each pair")
     pairs = [x for x in index_group if len(x) == 2]
     for ing1, ing2 in pairs:    # iterate all pairs
-        find_best_in_pair(ngu, nb_value_per_ingredient, peaks, ing1, ing2)
+        current_result = find_best_in_pair(ngu, nb_value_per_ingredient, peaks, ing1, ing2)
+
+        best_result = select_best_result(current_result, best_result)
 
         if (best_solution_found(ngu)):
             return True
@@ -110,7 +130,9 @@ def solve_cooking(ngu: NGUIdle):
     print("Identify all best values for unmatched ingredients")
     singles = [x for x in index_group if len(x) == 1]
     for ing1, in singles:
-        find_best_single(ngu, peaks, ing1)
+        current_result = find_best_single(ngu, peaks, ing1)
+
+        best_result = select_best_result(current_result, best_result)
 
         if (best_solution_found(ngu)):
             return True
@@ -146,13 +168,19 @@ def solve_cooking(ngu: NGUIdle):
             new_peaks = new_ext[1]
             if len(np.setdiff1d(new_peaks, old_peaks)) >= 0:
                 print(f"Found new peaks with ingredient {ing1} and {ing2}")
-                find_best_in_pair(ngu, nb_value_per_ingredient, new_ext, ing1, ing2)
+                current_result = find_best_in_pair(ngu, nb_value_per_ingredient, new_ext, ing1, ing2)
+
+                best_result = select_best_result(current_result, best_result)
 
                 if (best_solution_found(ngu)):
                     return True
             else:
                 ngu.cooking.set_ingredient_value(ing1, ing1_value_previous)
                 ngu.cooking.set_ingredient_value(ing2, ing2_value_previous)
+
+        print(f"Set result to the best one so far at %{best_result.meal_efficiency} efficiency")
+        for i in range(nb_ingredients):
+            ngu.cooking.set_ingredient_value(i, best_result.ingredients[i])
 
     return False
 
