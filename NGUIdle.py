@@ -73,6 +73,7 @@ class NGUIdle:
         logging.debug(f"client_area         : {self.client_rect.x}, {self.client_rect.y}, {self.client_rect.width}x{self.client_rect.height}")
         logging.debug(f"client_area_screen  : {self.client_area_screen_rect.x}, {self.client_area_screen_rect.y}, {self.client_area_screen_rect.width}x{self.client_area_screen_rect.height}")
 
+        self.previous_mouse_position = None
         self.load_configuration()
 
         self.cooking = NGUIdle.Cooking(self)
@@ -123,9 +124,12 @@ class NGUIdle:
     def click(self, x, y, clicks=1):
         x = self.client_area_screen_rect.left + x
         y = self.client_area_screen_rect.top + y
+        if self.previous_mouse_position is not None and self.previous_mouse_position != pyautogui.position():
+            raise StopIteration("Mouse has moved since last click, we will prevent having to fight over control of the mouse")
         # pyautogui.click(x, y, clicks)     # too fast, clicks do not all register properly
         for i in range(clicks):
             pyautogui.click(x, y)
+        self.previous_mouse_position = (x, y)
 
     def capture_region(self, client_area: rect.Rect) -> np.array:
         top_left = win32gui.ClientToScreen(self.NGUIdle, (client_area.left, client_area.top))
